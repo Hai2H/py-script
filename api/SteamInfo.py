@@ -4,8 +4,6 @@ from functools import lru_cache
 import requests
 from bs4 import BeautifulSoup
 
-from FeiShu import add_record
-
 # 创建游戏数据字典
 game_data = {}
 # 创建一个缓存字典

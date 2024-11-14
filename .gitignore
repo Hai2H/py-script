@@ -25,3 +25,4 @@ bin-release/
 /.idea/modules.xml
 /.idea/PyScrpit.iml
 /.idea/vcs.xml
+.vercel

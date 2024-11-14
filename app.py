@@ -2,8 +2,7 @@ from venv import logger
 
 from flask import Flask, render_template, request
 
-import FeiShu
-import SteamInfo
+from api import FeiShu, SteamInfo
 
 app = Flask(__name__)
 
@@ -33,5 +32,5 @@ def steam_name(appID):
     else:
         return "游戏名称未找到"
 
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run(debug=True, host='0.0.0.0')
