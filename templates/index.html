@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息填写</title>
+
+    <!-- 引入 Vue 3 -->
+    <script src="https://unpkg.com/vue@3.2.47/dist/vue.global.js"></script>
+
+    <!-- 引入 Element Plus -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+
+    <!-- 引入 TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100 py-8 px-4">
+    <div id="app">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 表单块 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="text-center text-xl font-semibold mb-4">{|form.headTitle|}</div>
+                <!-- 使用 Element Plus 的 el-form 组件来渲染表单 -->
+                <el-form :model="form" label-width="100px" @submit.prevent="submitForm(form)">
+
+                    <!-- SteamID -->
+                    <el-form-item label="SteamID" :rules="[{ required: true, message: '请输入SteamID', trigger: 'blur' }]" clearable>
+                        <el-input v-model="form.appId" placeholder="输入SteamID" @blur="getSteamName(form)"/>
+                    </el-form-item>
+
+                    <!-- 版本 -->
+                    <el-form-item label="版本" :rules="[{ required: true, message: '请输入版本', trigger: 'blur' }]" clearable>
+                        <el-input v-model="form.version" placeholder="版本信息"/>
+                    </el-form-item>
+
+                    <!-- 资源链接 -->
+                    <el-form-item label="资源链接" clearable>
+                        <el-input v-model="form.resourceLink.link" placeholder="输入资源链接"/>
+                    </el-form-item>
+
+                    <!-- 夸克链接 -->
+                    <el-form-item label="夸克链接" clearable>
+                        <el-input v-model="form.quarkLink.link" placeholder="输入夸克链接" @blur="extractURL(form)"/>
+                    </el-form-item>
+
+                    <!-- 文件大小 -->
+                    <el-form-item label="大小" clearable>
+                        <el-input v-model="form.size" placeholder="例如：20MB"/>
+                    </el-form-item>
+
+                    <!-- 备注 -->
+                    <el-form-item label="备注" clearable>
+                        <el-input
+                            type="textarea"
+                            v-model="form.remarks"
+                            placeholder="输入备注"
+                            :autosize="{ minRows: 3, maxRows: 6 }"
+                        />
+                    </el-form-item>
+
+                    <!-- 提交按钮 -->
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            :loading="form.isSubmitting"
+                            @click="submitForm(form)"
+                            :disabled="form.isSubmitting"
+                            class="w-full"
+                        >
+                            {|form.isSubmitting ? '提交中...' : '确认'|}
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+             <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="text-center text-xl font-semibold mb-4">{|form1.headTitle|}</div>
+                <!-- 使用 Element Plus 的 el-form 组件来渲染表单 -->
+                <el-form :model="form1" label-width="100px" @submit.prevent="submitForm(form1)">
+
+                    <!-- SteamID -->
+                    <el-form-item label="SteamID" :rules="[{ required: true, message: '请输入SteamID', trigger: 'blur' }]" clearable>
+                        <el-input v-model="form1.appId" placeholder="输入SteamID" @blur="getSteamName(form1)"/>
+                    </el-form-item>
+
+                    <!-- 版本 -->
+                    <el-form-item label="版本" :rules="[{ required: true, message: '请输入版本', trigger: 'blur' }]" clearable>
+                        <el-input v-model="form1.version" placeholder="版本信息"/>
+                    </el-form-item>
+
+                    <!-- 资源链接 -->
+                    <el-form-item label="资源链接" clearable>
+                        <el-input v-model="form1.resourceLink.link" placeholder="输入资源链接"/>
+                    </el-form-item>
+
+                    <!-- 夸克链接 -->
+                    <el-form-item label="夸克链接" clearable>
+                        <el-input v-model="form1.quarkLink.link" placeholder="输入夸克链接" @blur="extractURL(form1)"/>
+                    </el-form-item>
+
+                    <!-- 文件大小 -->
+                    <el-form-item label="大小" clearable>
+                        <el-input v-model="form1.size" placeholder="例如：20MB"/>
+                    </el-form-item>
+
+                    <!-- 备注 -->
+                    <el-form-item label="备注" clearable>
+                        <el-input
+                            type="textarea"
+                            v-model="form1.remarks"
+                            placeholder="输入备注"
+                            :autosize="{ minRows: 3, maxRows: 6 }"
+                        />
+                    </el-form-item>
+
+                    <!-- 提交按钮 -->
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            :loading="form1.isSubmitting"
+                            @click="submitForm(form1)"
+                            :disabled="form.isSubmitting"
+                            class="w-full"
+                        >
+                            {|form1.isSubmitting ? '提交中...' : '确认'|}
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <!-- 可以复制上述的表单块，生成其他表单 -->
+             <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="text-center text-xl font-semibold mb-4">{|form2.headTitle|}</div>
+                <!-- 使用 Element Plus 的 el-form 组件来渲染表单 -->
+                <el-form :model="form2" label-width="100px" @submit.prevent="submitForm(form2)">
+
+                    <!-- SteamID -->
+                    <el-form-item label="SteamID" :rules="[{ required: true, message: '请输入SteamID', trigger: 'blur' }]" clearable>
+                        <el-input v-model="form2.appId" placeholder="输入SteamID" @blur="getSteamName(form2)"/>
+                    </el-form-item>
+
+                    <!-- 版本 -->
+                    <el-form-item label="版本" :rules="[{ required: true, message: '请输入版本', trigger: 'blur' }]" clearable>
+                        <el-input v-model="form2.version" placeholder="版本信息"/>
+                    </el-form-item>
+
+                    <!-- 资源链接 -->
+                    <el-form-item label="资源链接" clearable>
+                        <el-input v-model="form2.resourceLink.link" placeholder="输入资源链接"/>
+                    </el-form-item>
+
+                    <!-- 夸克链接 -->
+                    <el-form-item label="夸克链接" clearable>
+                        <el-input v-model="form2.quarkLink.link" placeholder="输入夸克链接" @blur="extractURL(form2)"/>
+                    </el-form-item>
+
+                    <!-- 文件大小 -->
+                    <el-form-item label="大小" clearable>
+                        <el-input v-model="form2.size" placeholder="例如：20MB"/>
+                    </el-form-item>
+
+                    <!-- 备注 -->
+                    <el-form-item label="备注" clearable>
+                        <el-input
+                            type="textarea"
+                            v-model="form2.remarks"
+                            placeholder="输入备注"
+                            :autosize="{ minRows: 3, maxRows: 6 }"
+                        />
+                    </el-form-item>
+
+                    <!-- 提交按钮 -->
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            :loading="form2.isSubmitting"
+                            @click="submitForm(form2)"
+                            :disabled="form.isSubmitting"
+                            class="w-full"
+                        >
+                            {|form2.isSubmitting ? '提交中...' : '确认'|}
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const App = {
+            delimiters: ['{|', '|}'],
+            data() {
+                return {
+                    initForm: {
+                        headTitle: '信息填写',
+                        appId: '',
+                        version: '',
+                        resourceLink: {
+                            link: '',
+                            text: ''
+                        },
+                        quarkLink: {
+                            link: '',
+                            text: ''
+                        },
+                        size: '',
+                        remarks: '',
+                        isSubmitting: false,
+                    },
+                    form: {
+                        headTitle: '信息填写',
+                        appId: '',
+                        version: '',
+                        resourceLink: {
+                            link: '',
+                            text: ''
+                        },
+                        quarkLink: {
+                            link: '',
+                            text: ''
+                        },
+                        size: '',
+                        remarks: '',
+                        isSubmitting: false,
+                    },
+                    form1: {
+                        headTitle: '信息填写',
+                        appId: '',
+                        version: '',
+                        resourceLink: {
+                            link: '',
+                            text: ''
+                        },
+                        quarkLink: {
+                            link: '',
+                            text: ''
+                        },
+                        size: '',
+                        remarks: '',
+                        isSubmitting: false,
+                    },
+                    form2: {
+                        headTitle: '信息填写',
+                        appId: '',
+                        version: '',
+                        resourceLink: {
+                            link: '',
+                            text: ''
+                        },
+                        quarkLink: {
+                            link: '',
+                            text: ''
+                        },
+                        size: '',
+                        remarks: '',
+                        isSubmitting: false,
+                    }
+                };
+            },
+            watch: {
+                'form.resourceLink.link': function (newText, oldText) {
+                    this.form.resourceLink.text = newText
+                }
+            },
+            methods: {
+                extractURL(data) {
+                    str = data.quarkLink.link;
+                    const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+                    const url = str.match(urlRegex);
+                    data.quarkLink.link = url ? url[0] : ''
+                    data.quarkLink.text = url ? url[0] : ''
+                },
+                getSteamName(data) {
+                    fetch(`/steam_name/${data['appId']}`, {
+                        method: 'GET',
+                        headers: {'Content-Type': 'application/json'},
+                    })
+                    .then(response => response.text())  // 将响应转为文本
+                    .then(responseData => {
+                        console.log('Steam 名称:', responseData); // 打印返回的数据
+                        data.headTitle = responseData;  // 修改传入的 data 对象
+                    })
+                    .catch(error => {
+                        console.error('获取 Steam 名称失败:', error);
+                    });
+                },
+                submitForm(data) {
+                    if (data.isSubmitting) return
+                    data.isSubmitting = true
+                    console.log('提交的数据：', data);
+                    try {
+                        // 模拟提交请求
+                        const response = fetch('/add_feishu_record', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(data),
+                        });
+                        console.log(response)
+                        if (response.ok) {
+                            // 成功提示
+                            this.$message.success('内容已成功上传！');
+                            data = {...this.initForm}; // 清空表单
+                        } else {
+                            // 失败提示
+                            this.$message.error('上传失败，请稍后再试。');
+                        }
+                    } catch (error) {
+                        console.error('提交失败：', error);
+                        this.$message.error('提交失败，请稍后再试。');
+                    } finally {
+                        data.isSubmitting = false; // 恢复提交按钮
+                    }
+                }
+            }
+        }
+        const app = Vue.createApp(App);
+        app.use(ElementPlus);
+        app.mount("#app");
+    </script>
+</body>
+
+</html>
