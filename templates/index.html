@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
     <script src="https://unpkg.com/element-plus"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .el-button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: -8px;
+            margin-bottom: 8px;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 py-8 px-4">
@@ -51,10 +59,22 @@
                 </el-form-item>
 
                 <!-- 版本 -->
-                <el-form-item label="版本" :rules="[{ required: true, message: '请输入版本', trigger: 'blur' }]"
+                <el-form-item label="版本" autocomplete=""
+                              :rules="[{ required: true, message: '请输入版本', trigger: 'blur' }]"
                               clearable>
-                    <el-input v-model="form.version" placeholder="版本信息"/>
+                    <el-input v-model="form.version" placeholder="版本信息" @focus="form.versionShow = true"/>
                 </el-form-item>
+                <el-button-group v-show="form.versionShow" class="text-center">
+                    <el-button
+                            v-for="button in [{text: 'Build'}, {text: '免安装'}]"
+                            :key="button.text"
+                            type="primary"
+                            link
+                            @click="handleSelect(form,2,button.text)"
+                    >
+                        {| button.text |}
+                    </el-button>
+                </el-button-group>
 
                 <!-- 资源链接 -->
                 <el-form-item label="资源链接" clearable>
@@ -68,8 +88,19 @@
 
                 <!-- 文件大小 -->
                 <el-form-item label="大小" clearable>
-                    <el-input v-model="form.size" placeholder="例如：20MB"/>
+                    <el-input v-model="form.size" placeholder="例如：20MB" @focus="form.sizeShow = true"></el-input>
                 </el-form-item>
+                <el-button-group v-show="form.sizeShow">
+                    <el-button
+                            v-for="button in [{text: 'M'}, {text: 'G'}]"
+                            :key="button.text"
+                            type="primary"
+                            link
+                            @click="handleSelect(form,1,button.text)"
+                    >
+                        {| button.text |}
+                    </el-button>
+                </el-button-group>
 
                 <!-- 备注 -->
                 <el-form-item label="备注" clearable>
@@ -77,8 +108,7 @@
                             type="textarea"
                             v-model="form.remarks"
                             placeholder="输入备注"
-                            :autosize="{ minRows: 3, maxRows: 6 }"
-                    />
+                            :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </el-form-item>
 
                 <!-- 提交按钮 -->
@@ -103,8 +133,7 @@
                             inline-prompt
                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                             inactive-text="暂未上传"
-                            active-text="已上传"
-                    />
+                            active-text="已上传"></el-switch>
                 </el-form-item>
             </el-form>
         </div>
@@ -161,8 +190,8 @@
                     }
                 ],
                 // 使用数组存储表单
-                forms: Array(3).fill(null).map(() => this.createBaseForm())
-            };
+                forms: Array(3).fill(null).map(() => this.createBaseForm()),
+            }
         },
         created() {
             this.isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -173,6 +202,7 @@
                     headTitle: '信息填写',
                     appId: '',
                     version: '',
+                    versionShow: false,
                     resourceLink: {
                         link: '',
                         text: ''
@@ -182,6 +212,7 @@
                         text: ''
                     },
                     size: '',
+                    sizeShow: false,
                     remarks: '',
                     isSubmitting: false,
                     isUpload: false
@@ -237,7 +268,21 @@
             },
             resetForm(data) {
                 Object.assign(data, this.createBaseForm())
-            }
+            },
+            // 处理选择某项时的操作
+            handleSelect(form, num, select) {
+                switch (num) {
+                    case 1:
+                        form.size += select
+                        form.sizeShow = false
+                        return
+                    case 2:
+                        form.version += select
+                        form.versionShow = false
+                        return;
+                }
+            },
+
         }
     }
     const app = Vue.createApp(App);
