@@ -16,9 +16,12 @@ def parse_basic_info(soup):
     :param soup:
     :return:
     """
-    # 提取标题
+    # 提取标题  中文/英文
     title = soup.find("div", {"class": "apphub_AppName"})
-    game_data["title"] = title.text.strip() if title else "No title found"
+    titleStr = game_data["title"]
+    if titleStr:
+        if titleStr != title.text.strip():
+            game_data["title"] = title.text.strip() + "/" + titleStr
 
     # 提取封面图片URL
     header_image = soup.find("img", {"class": "game_header_image_full"})
@@ -137,6 +140,30 @@ def fetch_steam_app_info(app_id):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }
+
+    #================================英文
+
+    # 设置返回内容为中文
+    cookie = {
+        "Steam_Language": "english"
+    }
+
+    # 发送HTTP请求
+    response = requests.get(url, headers=headers, cookies=cookie, allow_redirects=False)
+    if response.status_code != 200:
+        return None
+
+    # 手动设置编码
+    response.encoding = 'utf-8'  # 根据实际情况设置编码
+
+    # 解析页面内容
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    title = soup.find("div", {"class": "apphub_AppName"})
+    game_data["title"] = title.text.strip() if title else "No title found"
+
+
+    # ================================  中文
 
     # 设置返回内容为中文
     cookie = {
