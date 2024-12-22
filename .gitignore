@@ -26,3 +26,6 @@ bin-release/
 /.idea/PyScrpit.iml
 /.idea/vcs.xml
 .vercel
+.idea
+api/__pycache__
+__pycache__

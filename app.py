@@ -1,11 +1,17 @@
-from venv import logger
-
 from flask import Flask, render_template, request
+import logging
 
 from api import FeiShu, SteamInfo
 
 app = Flask(__name__)
 
+# 配置日志
+app.logger.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+app.logger.addHandler(handler)
 
 @app.route('/')
 def home():  # put application's code here
@@ -16,7 +22,7 @@ def add_record():
     data = request.get_json()
     print(data)
     game_data = SteamInfo.get_game_data(data)
-    logger.info(game_data)
+    app.logger.info(game_data)
     if FeiShu.add_record(game_data):
         return "添加成功"
     else:

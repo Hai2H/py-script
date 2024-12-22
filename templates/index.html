@@ -142,11 +142,15 @@
 
 <script>
     const App = {
+        // 自定义分隔符
         delimiters: ['{|', '|}'],
         data() {
             return {
+                // 是否认证
                 isAuthenticated: false,
+                // 密码
                 password: '',
+                // 正确密码
                 correctPassword: '52huahua',
                 // 表单字段定义
                 formFields: [
@@ -190,10 +194,11 @@
                     }
                 ],
                 // 使用数组存储表单
-                forms: Array(3).fill(null).map(() => this.createBaseForm()),
+                forms: Array(1).fill(null).map(() => this.createBaseForm()),
             }
         },
         created() {
+            // 认证验证
             this.isAuthenticated = localStorage.getItem('isAuthenticated');
         },
         methods: {

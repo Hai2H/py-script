@@ -1,6 +1,6 @@
 import time
 from functools import lru_cache
-
+from flask import current_app
 import requests
 from bs4 import BeautifulSoup
 
@@ -12,7 +12,7 @@ game_data_cache = {}
 
 def parse_basic_info(soup):
     """
-    获取游戏基本信息
+    获取Steam游戏基本信息
     :param soup:
     :return:
     """
@@ -62,7 +62,7 @@ def parse_basic_info(soup):
 
 def parse_game_info(soup):
     """
-    获取游戏详细信息
+    获取Steam游戏详细信息
     :param soup:
     :return:
     """
@@ -123,10 +123,16 @@ def parse_game_info(soup):
     # game_data["minimum_requirements"] = minimum_requirements
     # game_data["recommended_requirements"] = recommended_requirements
 
-@lru_cache(maxsize=128)  # 最大缓存128个条目
+# @lru_cache(maxsize=128)  # 最大缓存128个条目
 def fetch_steam_app_info(app_id):
+    """
+    获取Steam游戏详细信息
+    :param app_id:
+    :return:
+    """
     # 检查缓存是否有该游戏数据
     if app_id in game_data_cache:
+        current_app.logger.info(f"缓存命中: {app_id}")
         return game_data_cache[app_id]
 
     url = f"https://store.steampowered.com/app/{app_id}"
@@ -143,7 +149,7 @@ def fetch_steam_app_info(app_id):
 
     #================================英文
 
-    # 设置返回内容为中文
+    # 设置返回内容为英文
     cookie = {
         "Steam_Language": "english"
     }
@@ -186,7 +192,13 @@ def fetch_steam_app_info(app_id):
     parse_game_info(soup)
 
     # 将结果存入缓存
+    current_app.logger.info(f"添加缓存: {app_id}")
     game_data_cache[app_id] = game_data
+
+
+    # 避免缓存溢出
+    if len(game_data_cache) > 128:
+        game_data_cache.clear()
 
     return game_data
 
@@ -206,6 +218,11 @@ def get_game_data(data):
 
 
 def generate_bbs_content(data):
+    """
+    生成bbs格式内容
+    :param data:
+    :return:
+    """
     htm = f"""<body id="tinymce" class="mce-content-body " data-id="message" aria-label="编辑区。按Alt+0键打开帮助。"
       contenteditable="true" spellcheck="false"
       style="overflow-y: hidden; padding-left: 1px; padding-right: 1px; min-height: 0px;"
