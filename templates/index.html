@@ -305,7 +305,7 @@
             },
            formatVersion(form) {
                 // v1.70 v0.12.0.5 将版本号中的 v 替换为大写, 匹配执行正则，避免替换所有v
-                // form.version = form.version.replace(/v(?=\d)/g, 'V');
+                form.version = form.version.replace(/v(?=\d)/g, 'V');
 
 
                 if (form.version.includes('Build')) {
