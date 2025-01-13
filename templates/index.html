@@ -78,8 +78,8 @@
 
                 <!-- 运行平台 -->
                 <el-form-item label="运行平台">
-                    <el-radio-group v-model="form.platform" default="电脑">
-                        <el-radio-button label="电脑">电脑</el-radio-button>
+                    <el-radio-group v-model="form.platform" default="PC">
+                        <el-radio-button label="PC">PC</el-radio-button>
                         <el-radio-button label="Switch">Switch</el-radio-button>
                         <el-radio-button label="手游">手游</el-radio-button>
                     </el-radio-group>
@@ -236,7 +236,7 @@
                     remarks: '',
                     isSubmitting: false,
                     isUpload: false,
-                    platform: '电脑'
+                    platform: 'PC'
                 }
             },
             validatePassword() {
