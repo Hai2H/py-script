@@ -335,7 +335,7 @@ def generate_bbs_content(data):
     data["bbs_content"] = htm
 
     # 标题生成
-    data["bbs_title"] = f"{data['title']}  {data['version']} 【{data['size']}】"
+    data["bbs_title"] = f"【{data['platform']}】{data['title']}  {data['version']} 【{data['size']}】"
 
     return data
 

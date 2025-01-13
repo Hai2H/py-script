@@ -62,7 +62,7 @@
                 <el-form-item label="版本" autocomplete=""
                               :rules="[{ required: true, message: '请输入版本', trigger: 'blur' }]"
                               clearable>
-                    <el-input v-model="form.version" placeholder="版本信息" @focus="form.versionShow = true"/>
+                    <el-input v-model="form.version" placeholder="版本信息" @focus="form.versionShow = true" @blur="formatVersion(form)"/>
                 </el-form-item>
                 <el-button-group v-show="form.versionShow" class="text-center">
                     <el-button
@@ -75,6 +75,15 @@
                         {| button.text |}
                     </el-button>
                 </el-button-group>
+
+                <!-- 运行平台 -->
+                <el-form-item label="运行平台">
+                    <el-radio-group v-model="form.platform" default="电脑">
+                        <el-radio-button label="电脑">电脑</el-radio-button>
+                        <el-radio-button label="Switch">Switch</el-radio-button>
+                        <el-radio-button label="手游">手游</el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
 
                 <!-- 资源链接 -->
                 <el-form-item label="资源链接" clearable>
@@ -162,6 +171,12 @@
                         blur: this.getSteamName
                     },
                     {
+                        name: 'platform',
+                        label: '运行平台',
+                        placeholder: '输入运行平台',
+                        rules: [{required: true, message: '请输入运行平台', trigger: 'blur'}]
+                    },
+                    {
                         name: 'version',
                         label: '版本',
                         placeholder: '版本信息',
@@ -220,7 +235,8 @@
                     sizeShow: false,
                     remarks: '',
                     isSubmitting: false,
-                    isUpload: false
+                    isUpload: false,
+                    platform: '电脑'
                 }
             },
             validatePassword() {
@@ -287,6 +303,25 @@
                         return;
                 }
             },
+           formatVersion(form) {
+                // v1.70 v0.12.0.5 将版本号中的 v 替换为大写, 匹配执行正则，避免替换所有v
+                // form.version = form.version.replace(/v(?=\d)/g, 'V');
+
+
+                if (form.version.includes('Build')) {
+                    form.version = form.version.replace('Build', ' Build ');
+                } else if (form.version.includes('免安装')) {
+                    form.version = form.version.replace('免安装', ' 免安装 ');
+                } else if (form.version.includes('官中')) {
+                    form.version = form.version.replace('官中', ' 官中 ');
+                } else if (form.version.includes('中文版')) {
+                    form.version = form.version.replace('中文版', ' 中文版 ');
+                } else if (form.version.includes('英文版')) {
+                    form.version = form.version.replace('英文版', ' 英文版 ');
+                }
+                // 统一清理连续空格为一个
+                form.version = form.version.replace(/\s+/g, ' ');
+            }
 
         }
     }
