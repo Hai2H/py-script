@@ -284,7 +284,7 @@ def start(start_page=1, end_page=1):
     
 if __name__ == '__main__':
     # 批量获取当前资源列表
-    start(start_page=1, end_page=10)
+    start(start_page=1, end_page=3)
 
 
     

@@ -1,9 +1,17 @@
+from datetime import datetime
+
+import pytz
 from flask import Flask, render_template, request
+from flask_cors import CORS  # 导入 CORS 支持
 import logging
 
 from api import FeiShu, SteamInfo
+from api.KuaFu import KuaFu
+from database import BBSInfo
+from tool import KuafuzysAcquisition
 
 app = Flask(__name__)
+CORS(app)  # 允许所有域名跨域访问，可以指定域名
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -13,6 +21,21 @@ handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 app.logger.addHandler(handler)
+
+def format_datetime(value, format='%Y-%m-%d'):
+    from datetime import datetime
+    if isinstance(value, (int, float)):
+        tz = pytz.timezone('Asia/Shanghai')  # 可以根据需要修改时区
+        date_time = datetime.fromtimestamp(value, tz)
+        return date_time.strftime(format)
+    return value
+
+app.jinja_env.filters['datetime'] = format_datetime
+
+
+@app.context_processor
+def inject_now():
+    return {'now': datetime.now()}
 
 # 使用 before_request 替代 before_first_request
 @app.before_request
@@ -47,6 +70,60 @@ def steam_name(appID):
     else:
         app.logger.warning(f"未找到游戏: {appID}")
         return "游戏名称未找到"
+
+
+@app.route('/original', methods=['GET'])
+def original():
+    return render_template("original.html")
+@app.route('/repost', methods=['GET'])
+def repost():
+    """
+    资源搬运
+    """
+    # 获取参数
+    page = request.args.get('page', type=int, default=1)
+    result = BBSInfo.paginate(page=page)
+    # 数据总条数
+    total = BBSInfo.get_total()
+    pages = total // 20
+    return render_template("repost.html", result=result, pages=pages, page=page)
+
+@app.route('/kaufuzys', methods=['GET'])
+def kfzys():
+    """
+    资源搬运
+    """
+    return render_template("kuafuzys.html")
+
+@app.route('/kaufuzys/start', methods=['GET'])
+def kfzys_repost_extract():
+    """
+    资源搬运
+    """
+    page = request.args.get('page', type=int, default=1)
+    uid = request.args.get('uid', type=str)
+    if KuafuzysAcquisition.start(uid, page=page):
+        return "成功"
+    else:
+        return "失败"
+
+@app.route('/repost/pushKuaFu', methods=['GET'])
+def push_kuafu():
+    """
+    资源搬运
+    """
+    # 获取请求参数
+    id = request.args.get('id', type=int)
+    quake_href = request.args.get('quake_href', type=str)
+    print(f"夸父资源>>> 发布到论坛，id:{id},quake_href:{quake_href}")
+    bbs_info = BBSInfo.get_byid(id)
+    bbs_info.quake_new_href = quake_href
+    # 替换内容中的网盘地址
+    bbs_info.replace_content()
+    kuafu = KuaFu(bbs_info)
+    return kuafu.add_kuafu()
+
+
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')

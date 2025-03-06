@@ -1,0 +1,37 @@
+{% extends "/base/base.html" %}
+
+{% block content %}
+<label>
+    <input type="text"   class="input" required placeholder="UID" />
+</label>
+<input type="number" class="input validator" required placeholder="采集页码" title="采集页码" />
+<button class="btn btn-primary" id="start">开始采集</button>
+
+<!--?<p class="validator-hint">Must be between be 1 to 10</p>-->
+        <script>
+            const startBtn = document.getElementById("start");
+            console.log(startBtn)
+            startBtn.addEventListener("click", async function () {
+                // 禁用按钮
+                startBtn.disabled = true;
+                const uid = document.querySelector("input[type='text']").value;
+                const page = document.querySelector("input[type='number']").value;
+                const url = `/kaufuzys/start?uid=${uid}&page=${page}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET'
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    console.log(data);
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                } finally {
+                    // 无论请求成功或失败，都恢复按钮可用
+                    startBtn.disabled = false;
+                }
+            });
+        </script>
+{% endblock %}
